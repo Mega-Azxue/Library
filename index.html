@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            overflow-y: auto;
+            color: white;
+            background: black;
+        }
+
+        .black-hole {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, #0a0a0a 0%, #000000 50%, #000000 100%);
+            z-index: -3;
+        }
+
+        .light-beams {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent 0%,
+                transparent 10%,
+                rgba(255, 255, 255, 0.03) 10%,
+                rgba(255, 255, 255, 0.03) 20%
+            );
+            animation: beams 10s linear infinite;
+            z-index: -2;
+        }
+
+        @keyframes beams {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(0deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(10deg); }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 8s infinite;
+            box-shadow: 0 0 10px white, 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes float {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) scale(1);
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) scale(2);
+            }
+        }
+
+        .glitch-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.02) 50%,
+                transparent 100%
+            );
+            animation: glitch 3s infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translateX(0); opacity: 0.3; }
+            10% { transform: translateX(-2px); opacity: 0.5; }
+            20% { transform: translateX(2px); opacity: 0.3; }
+            30% { transform: translateX(-1px); opacity: 0.5; }
+            40% { transform: translateX(1px); opacity: 0.3; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.1), 0 0 100px rgba(255, 255, 255, 0.05);
+            animation: containerGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes containerGlow {
+            0% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.1), 0 0 60px rgba(255, 255, 255, 0.05); }
+            50% { box-shadow: 0 0 50px rgba(255, 255, 255, 0.2), 0 0 100px rgba(255, 255, 255, 0.1); }
+            100% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.1), 0 0 60px rgba(255, 255, 255, 0.05); }
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 3.5em;
+            font-weight: 900;
+            letter-spacing: 5px;
+            background: linear-gradient(45deg, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0% { opacity: 0.9; text-shadow: 0 0 30px rgba(255,255,255,0.3); }
+            50% { opacity: 1; text-shadow: 0 0 50px rgba(255,255,255,0.5); }
+            100% { opacity: 0.9; text-shadow: 0 0 30px rgba(255,255,255,0.3); }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: white;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #deleteBtn {
+            background: rgba(255, 50, 50, 0.2);
+            border-color: rgba(255, 50, 50, 0.3);
+        }
+
+        #deleteBtn:hover {
+            background: rgba(255, 50, 50, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 50, 50, 0.3);
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status h3 {
+            margin-bottom: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #monitorStatus {
+            font-size: 0.8em;
+            padding: 3px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+
+        #statusMessage {
+            min-height: 60px;
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #ddd;
+        }
+
+        .webhook-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: normal;
+            margin-left: 10px;
+        }
+
+        .webhook-active {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #aaffaa;
+        }
+
+        .webhook-invalid {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ffaaaa;
+        }
+
+        .webhook-unknown {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #aaa;
+        }
+
+        .live-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: rgba(255, 0, 0, 0.3);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .post-badge {
+            background: rgba(0, 100, 255, 0.3);
+            border: 1px solid rgba(0, 100, 255, 0.5);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .saved-monitors {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .saved-monitors h2 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            color: white;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .monitor-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .monitor-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .monitor-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .monitor-info {
+            flex: 1;
+        }
+
+        .monitor-account {
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .monitor-webhook {
+            font-size: 0.8em;
+            color: #aaa;
+            word-break: break-all;
+        }
+
+        .monitor-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .customize-btn, .delete-monitor-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .customize-btn {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .customize-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .delete-monitor-btn {
+            background: rgba(255, 50, 50, 0.2);
+        }
+
+        .delete-monitor-btn:hover {
+            background: rgba(255, 50, 50, 0.5);
+            transform: scale(1.1);
+            border-color: rgba(255, 50, 50, 0.8);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="black-hole"></div>
+    <div class="light-beams"></div>
+    <div class="particles" id="particles"></div>
+    <div class="glitch-overlay"></div>
+
+    <div class="container">
+        <h1>BALLER</h1>
+        
+        <div class="input-group">
+            <label>TIKTOK ACCOUNT</label>
+            <input type="text" id="tiktokInput" placeholder="@username or https://tiktok.com/@username">
+        </div>
+
+        <div class="input-group">
+            <label>DISCORD WEBHOOK 
+                <span id="webhookStatusBadge" class="webhook-status webhook-unknown">⏳ Unknown</span>
+            </label>
+            <input type="url" id="webhookInput" placeholder="https://discord.com/api/webhooks/...">
+        </div>
+
+        <div class="button-group">
+            <button id="saveBtn">SAVE MONITOR</button>
+            <button id="testWebhook">TEST WEBHOOK</button>
+        </div>
+
+        <div class="status">
+            <h3>
+                MONITOR STATUS 
+                <span id="monitorStatus" class="webhook-status webhook-unknown">⏳ Idle</span>
+            </h3>
+            <div id="statusMessage">
+                Enter account and webhook then click Save Monitor
+            </div>
+        </div>
+
+        <div class="saved-monitors">
+            <h2>SAVED MONITORS</h2>
+            <div class="monitor-list" id="monitorList">
+                <div style="text-align: center; color: #666; padding: 20px;">
+                    No saved monitors
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            BLACK THEME • BALLER • PERSISTENT STORAGE
+        </div>
+    </div>
+
+    <script>
+        let monitors = [];
+        let currentMonitorId = null;
+        let monitorInterval = null;
+
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (5 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function loadMonitors() {
+            const saved = localStorage.getItem('ballerMonitors');
+            if (saved) {
+                try {
+                    monitors = JSON.parse(saved);
+                } catch (e) {
+                    monitors = [];
+                }
+            } else {
+                monitors = [];
+            }
+            renderMonitors();
+            
+            if (monitors.length > 0 && !currentMonitorId) {
+                loadMostRecentMonitor();
+            }
+        }
+
+        function saveMonitors() {
+            localStorage.setItem('ballerMonitors', JSON.stringify(monitors));
+            renderMonitors();
+        }
+
+        function renderMonitors() {
+            const list = document.getElementById('monitorList');
+            
+            if (monitors.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">No saved monitors</div>';
+                return;
+            }
+
+            let html = '';
+            monitors.forEach(monitor => {
+                const isActive = currentMonitorId === monitor.id;
+                html += `
+                    <div class="monitor-item" style="${isActive ? 'border-color: white; box-shadow: 0 0 15px rgba(255,255,255,0.2);' : ''}">
+                        <div class="monitor-info">
+                            <div class="monitor-account">${monitor.account} ${isActive ? '▶ ACTIVE' : ''}</div>
+                            <div class="monitor-webhook">${monitor.webhook.substring(0, 50)}...</div>
+                        </div>
+                        <div class="monitor-actions">
+                            <button class="customize-btn" onclick="customizeMonitor('${monitor.id}')" title="Customize">@</button>
+                            <button class="delete-monitor-btn" onclick="deleteMonitor('${monitor.id}')" title="Delete">×</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            list.innerHTML = html;
+        }
+
+        function customizeMonitor(id) {
+            const monitor = monitors.find(m => m.id === id);
+            if (monitor) {
+                document.getElementById('tiktokInput').value = monitor.account;
+                document.getElementById('webhookInput').value = monitor.webhook;
+                currentMonitorId = id;
+                
+                startMonitoring(monitor.account, monitor.webhook);
+                updateWebhookStatus(monitor.webhook);
+                
+                document.getElementById('monitorStatus').textContent = '▶ ACTIVE';
+                document.getElementById('monitorStatus').className = 'webhook-status webhook-active';
+                
+                renderMonitors();
+                updateStatus(`Loaded monitor for ${monitor.account}`);
+            }
+        }
+
+        function deleteMonitor(id) {
+            if (currentMonitorId === id) {
+                stopMonitoring();
+                currentMonitorId = null;
+                document.getElementById('monitorStatus').textContent = '⏳ Idle';
+                document.getElementById('monitorStatus').className = 'webhook-status webhook-unknown';
+            }
+            
+            monitors = monitors.filter(m => m.id !== id);
+            saveMonitors();
+            
+            if (monitors.length > 0 && !currentMonitorId) {
+                loadMostRecentMonitor();
+            }
+            
+            updateStatus('Monitor deleted');
+        }
+
+        function loadMostRecentMonitor() {
+            if (monitors.length > 0) {
+                const mostRecent = monitors[monitors.length - 1];
+                customizeMonitor(mostRecent.id);
+            }
+        }
+
+        function stopMonitoring() {
+            if (monitorInterval) {
+                clearInterval(monitorInterval);
+                monitorInterval = null;
+            }
+        }
+
+        function startMonitoring(account, webhook) {
+            stopMonitoring();
+            
+            monitorInterval = setInterval(() => {
+                performCheck(account, webhook);
+            }, 30000);
+            
+            performCheck(account, webhook);
+        }
+
+        async function checkTikTokAccount(account) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const rand = Math.random();
+                    const isLive = rand < 0.3;
+                    const hasNewPost = rand > 0.6;
+                    
+                    resolve({
+                        account: account,
+                        timestamp: new Date().toLocaleString(),
+                        isLive: isLive,
+                        hasNewPost: hasNewPost,
+                        liveLink: isLive ? `https://tiktok.com/${account}/live` : null,
+                        latestPost: hasNewPost ? `https://tiktok.com/${account}/video/${Math.floor(Math.random() * 1000000)}` : null
+                    });
+                }, 1000);
+            });
+        }
+
+        async function sendToDiscord(webhookUrl, data) {
+            try {
+                let content = '';
+                if (data.isLive) {
+                    content = `🔴 LIVE: ${data.account}\nWatch: ${data.liveLink}`;
+                } else if (data.hasNewPost) {
+                    content = `📸 NEW POST: ${data.account}\nView: ${data.latestPost}`;
+                } else {
+                    content = `ℹ️ No activity for ${data.account}`;
+                }
+
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: content
+                    })
+                });
+
+                if (response.ok) {
+                    return { success: true };
+                } else {
+                    throw new Error('Failed to send');
+                }
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function validateWebhook(webhookUrl) {
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: '✅ Webhook test from Baller'
+                    })
+                });
+
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        async function updateWebhookStatus(webhookUrl) {
+            const badge = document.getElementById('webhookStatusBadge');
+            
+            if (!webhookUrl || !webhookUrl.includes('discord.com/api/webhooks/')) {
+                badge.textContent = '❌ Invalid';
+                badge.className = 'webhook-status webhook-invalid';
+                return false;
+            }
+
+            badge.textContent = '⏳ Testing';
+            badge.className = 'webhook-status webhook-unknown';
+            
+            const isValid = await validateWebhook(webhookUrl);
+            
+            if (isValid) {
+                badge.textContent = '✅ Active';
+                badge.className = 'webhook-status webhook-active';
+            } else {
+                badge.textContent = '❌ Invalid';
+                badge.className = 'webhook-status webhook-invalid';
+            }
+            
+            return isValid;
+        }
+
+        function updateStatus(message, isActivity = false) {
+            const statusDiv = document.getElementById('statusMessage');
+            
+            if (typeof message === 'string') {
+                statusDiv.innerHTML = message;
+            } else {
+                let html = `Last Check: ${message.timestamp}<br>`;
+                html += `Account: ${message.account}<br>`;
+                
+                if (message.isLive) {
+                    html += `<span class="live-badge">🔴 LIVE</span> `;
+                    html += `<a href="${message.liveLink}" target="_blank" style="color: white;">Watch</a><br>`;
+                }
+                
+                if (message.hasNewPost) {
+                    html += `<span class="live-badge post-badge">📸 NEW POST</span> `;
+                    html += `<a href="${message.latestPost}" target="_blank" style="color: white;">View</a><br>`;
+                }
+                
+                if (!message.isLive && !message.hasNewPost) {
+                    html += `No activity detected<br>`;
+                }
+                
+                statusDiv.innerHTML = html;
+            }
+        }
+
+        async function performCheck(account, webhook) {
+            if (!account || !webhook) return;
+            
+            updateStatus(`Checking ${account}...`);
+            
+            const result = await checkTikTokAccount(account);
+            updateStatus(result, true);
+            
+            if (result.isLive || result.hasNewPost) {
+                await sendToDiscord(webhook, result);
+            }
+        }
+
+        document.getElementById('saveBtn').addEventListener('click', async () => {
+            const account = document.getElementById('tiktokInput').value.trim();
+            const webhook = document.getElementById('webhookInput').value.trim();
+
+            if (!account || !webhook) {
+                updateStatus('Please fill in all fields');
+                return;
+            }
+
+            if (!webhook.includes('discord.com/api/webhooks/')) {
+                updateStatus('Please enter a valid Discord webhook URL');
+                return;
+            }
+
+            const isValid = await updateWebhookStatus(webhook);
+            if (!isValid) {
+                updateStatus('Webhook is invalid - check the URL');
+                return;
+            }
+
+            stopMonitoring();
+            
+            const monitorId = Date.now().toString();
+            const newMonitor = {
+                id: monitorId,
+                account: account,
+                webhook: webhook,
+                timestamp: new Date().toISOString()
+            };
+            
+            monitors.push(newMonitor);
+            saveMonitors();
+            
+            currentMonitorId = monitorId;
+            startMonitoring(account, webhook);
+            
+            document.getElementById('monitorStatus').textContent = '▶ ACTIVE';
+            document.getElementById('monitorStatus').className = 'webhook-status webhook-active';
+            
+            updateStatus(`Monitoring started for ${account}`);
+        });
+
+        document.getElementById('testWebhook').addEventListener('click', async () => {
+            const webhook = document.getElementById('webhookInput').value.trim();
+            
+            if (!webhook) {
+                updateStatus('Please enter a webhook URL');
+                return;
+            }
+
+            await updateWebhookStatus(webhook);
+        });
+
+        document.getElementById('tiktokInput').addEventListener('input', (e) => {
+            let value = e.target.value.trim();
+            if (value && !value.startsWith('@') && !value.includes('tiktok.com')) {
+                e.target.value = '@' + value;
+            }
+        });
+
+        document.getElementById('webhookInput').addEventListener('input', () => {
+            const webhook = document.getElementById('webhookInput').value.trim();
+            if (webhook) {
+                document.getElementById('webhookStatusBadge').textContent = '⏳ Unknown';
+                document.getElementById('webhookStatusBadge').className = 'webhook-status webhook-unknown';
+            }
+        });
+
+        window.addEventListener('load', () => {
+            createParticles();
+            loadMonitors();
+        });
+
+        window.addEventListener('beforeunload', () => {
+            stopMonitoring();
+        });
+    </script>
+</body>
+  </html>
